@@ -63,6 +63,9 @@ class Sassee {
 	{
 		$this->EE =& get_instance();
 		
+		// Load the Sassee helper
+		$this->EE->load->helper('sassee');
+		
 		// define a constant for the current site_id rather than calling $PREFS->ini() all the time
 		if (defined('SITE_ID') === FALSE)
 			define('SITE_ID', $this->EE->config->item('site_id'));
@@ -72,6 +75,13 @@ class Sassee {
 
 		$SEX = new Sassee_ext;
 		$this->settings = $SEX->get_settings();
+			  
+    if ($this->settings)
+    {
+      $this->settings['css_path'] = @$this->EE->functions->remove_double_slashes($this->settings['css_path'].'/');
+      $this->settings['css_url'] = @$this->EE->functions->remove_double_slashes($this->settings['css_url'].'/');
+      $this->settings['sass_path'] = @$this->EE->functions->remove_double_slashes($this->settings['sass_path'].'/');
+    }
 			  
 		$this->_file = $this->_fetch_param('file');
 		$this->_template = $this->_fetch_param('template');
@@ -90,14 +100,14 @@ class Sassee {
 	}
 	// END __construct
 	
-	function output()
-	{
-	  // If source is empty, abort here
-    if ( ! $this->_source) return '';
-    
-    $output = $this->_parse($this->_source['contents']);
-		
-	}
+  function output()
+  {
+    // If source is empty, abort here
+      if ( ! $this->_source) return '';
+      
+      $output = $this->_parse($this->_source['contents']);
+   
+  }
 	// END output
 	
 	function file()
@@ -105,26 +115,17 @@ class Sassee {
 
 	  // If source is empty, abort here
     if ( ! $this->_source) return '';
-	  	  	  
-	  $css_file = str_replace('.sass', '.css', $this->_file);	  	
-	  	  	
-    $output = $this->_parse($this->_source['contents']);
-    
-    if ( ! file_put_contents($this->settings['css_path'].$css_file, $output))
-    {
-      $this->_log("Could not write file '$css_file'");
-      return FALSE;
-    }
+	  
+	  if ($this->_source['type'] === 'css')
+	  {
+      $this->return_data = $this->_source['url'];
+	  }	
+	  else
+	  {
+      $output = $this->_parse($this->_source['contents']);
 
-    $css_url = $this->EE->functions->remove_double_slashes($this->settings['css_url'].'/').$css_file;
-    
-    if ( ! file_exists($this->settings['css_path'].$css_file))
-    {
-      $this->_log("Could find file '$css_url'");
-      return FALSE;
-    }
-    
-    $this->return_data = $css_url;
+      $this->return_data = $this->write_css_file($this->_file, $output);	    
+	  }
     
     return $this->return_data;
 	  
@@ -133,10 +134,16 @@ class Sassee {
 	
 	function _parse($source='')
 	{
+
+	  // If source is empty, abort here
+	  if ( ! $source) return '';
 	  
-    $this->EE->load->library('sass');	  
-	  
+	  // Load SASS library
+    $this->EE->load->library('sass');
+    
+    // Return parse SASS source as CSS
 	  return $this->EE->sass->parse($source, FALSE);
+
 	}
 	// END _parse_source
 	
@@ -154,12 +161,24 @@ class Sassee {
       return FALSE;
     }
     
+	  $source_date_modified = filemtime($this->settings['sass_path'].$file);
+    
+    $css_filename = css_filename($file);
+    
+    // If a css file exists and it is as old as the source file
+    if (file_exists($this->settings['css_path'].$css_filename) AND filemtime($this->settings['css_path'].$css_filename) > $source_date_modified)
+    {
+      return array(
+        'type' => 'css',
+        'url' => $this->settings['css_url'].$css_filename
+      );
+    }
+
 	  $source = file_get_contents($this->settings['sass_path'].$file);
-	  $date_modified = filemtime($this->settings['sass_path'].$file);
     
     return array(
-      'contents' => $source,
-      'date_modified' => $date_modified
+      'type' => 'sass',      
+      'contents' => $source
     );
 	  
 	}
@@ -169,16 +188,26 @@ class Sassee {
 	  if ( ! $template) return '';
 	}
 	
-	function _fetch_file()
+	function write_css_file($file='', $contents='')
 	{
-	   
+	  $filename = css_filename($this->_file);	  		  	  	
+    
+    if ( ! file_exists($this->settings['css_path']))
+    {
+      mkdir($this->settings['css_path']);
+    }
+    
+    if ( ! file_put_contents($this->settings['css_path'].$filename, $contents))
+    {
+      $this->_log("Could not write file '$filename'");
+      return FALSE;
+    }
+
+    return $this->settings['css_url'].$filename;
+
+	  
 	}
-	
-	
-	
-	
-	
-	
+
 	
 	function _fetch_template($template='')
 	{
@@ -203,6 +232,11 @@ class Sassee {
 	}
 	// END _parse_template
 	
+	
+	/*****************************
+	* Helper functions
+	*****************************/
+	
   /**
   * Helper function for getting a parameter
   */		 
@@ -222,7 +256,7 @@ class Sassee {
   {
     $val = $this->_fetch_param($key, $default_value);
     
-    return in_array($val, array('y', 'yes', '1', 'true')) ? TRUE : FALSE;
+    return in_array($val, array('y', 'yes', '1', 'true', 'on', TRUE));
   }	
   
   function _log($message='')
