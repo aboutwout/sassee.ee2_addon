@@ -55,7 +55,6 @@ class Sassee_ext {
 			'css_path' => @$this->settings['css_path'],
 			'css_url' => @$this->settings['css_url'],
 			'sass_path' => @$this->settings['sass_path'],
-			'cache' => array('r', array('y' => "yes", 'n' => "no"), @$this->settings['cache']),
 		  'style' => array('s', array('nested', 'expanded', 'compact', 'compressed'), @$this->settings['style']),
 		  'syntax' => array('s', array('sass', 'scss'), @$this->settings['syntax'])
 		);
@@ -69,7 +68,6 @@ class Sassee_ext {
 			'css_path' => $this->EE->input->post('css_path'),
 			'css_url' => $this->EE->input->post('css_url'),
 			'sass_path' => $this->EE->input->post('sass_path'),
-			'cache' => $this->EE->input->post('cache'),
 		  'style' => $this->EE->input->post('style'),
 		  'syntax' => $this->EE->input->post('syntax')
 	  );
@@ -120,7 +118,6 @@ class Sassee_ext {
 		  'sass_path' => @$_SERVER['DOCUMENT_ROOT'].'/sass/',
 		  'css_path' => @$_SERVER['DOCUMENT_ROOT'].'/css/',
 		  'css_url' => '/css',
-		  'cache' => 'y',
 		  'style' => 'nested',
 		  'syntax' => 'sass'
 		);

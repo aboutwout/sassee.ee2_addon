@@ -49,6 +49,15 @@ class Sassee {
   * @var			string
   **/	
 	private $_source = '';
+
+  /**
+  * ...
+  * @access		private
+  * @var			boolean
+  **/	
+	private $_parse_source = TRUE;
+	
+	
 	
 	
 	function Sassee()
@@ -89,12 +98,16 @@ class Sassee {
     // Fetch source from a file
     if ($this->_file)
     {
+      $this->_output_file = css_filename($this->_file);
       $this->_source = $this->_get_source_from_file($this->_file);
     }
     // Fetch source from a template
     elseif ($this->_template)
-    {
+    {      
+      $this->_output_file = css_filename($this->_template);
+
       $this->_source = $this->_get_source_from_template($this->_template);      
+
     }
     
 	}
@@ -116,15 +129,15 @@ class Sassee {
 	  // If source is empty, abort here
     if ( ! $this->_source) return '';
 	  
-	  if ($this->_source['type'] === 'css')
+	  if ($this->_parse_source === FALSE)
 	  {
-      $this->return_data = $this->_source['url'];
+      $this->return_data = $this->_source;
 	  }	
 	  else
 	  {
-      $output = $this->_parse($this->_source['contents']);
+      $output = $this->_parse($this->_source);
 
-      $this->return_data = $this->write_css_file($this->_file, $output);	    
+      $this->return_data = $this->write_css_file($this->_output_file, $output);	    
 	  }
     
     return $this->return_data;
@@ -168,29 +181,49 @@ class Sassee {
     // If a css file exists and it is as old as the source file
     if (file_exists($this->settings['css_path'].$css_filename) AND filemtime($this->settings['css_path'].$css_filename) > $source_date_modified)
     {
-      return array(
-        'type' => 'css',
-        'url' => $this->settings['css_url'].$css_filename
-      );
+      $this->_parse_source = FALSE;
+      return $this->settings['css_url'].$css_filename;
     }
 
-	  $source = file_get_contents($this->settings['sass_path'].$file);
-    
-    return array(
-      'type' => 'sass',      
-      'contents' => $source
-    );
+	  return file_get_contents($this->settings['sass_path'].$file);
 	  
 	}
 	
 	function _get_source_from_template($template='')
 	{
 	  if ( ! $template) return '';
+	  
+		// Parse HTML EE Template
+	  $parts = explode('/', $template);	  
+	  $template_group = @$parts[0];
+	  $template_name = isset($parts[1]) ? $parts[1] : 'index';
+	  
+	  if ($template_group  AND $template_name)
+	  {
+	    
+	    // Hijack the template engine
+  		$TMPL = new Inline_template();
+  		$TMPL->run_template_engine($template_group, $template_name);
+  		$source = $TMPL->final_template;
+  		$source_date_modified = $TMPL->template_edit_date;
+  		
+	    $css_filename = $template_name.'.css';
+      
+	    if (file_exists($this->settings['css_path'].$css_filename) AND filemtime($this->settings['css_path'].$css_filename) > $source_date_modified)
+      {
+        $this->_log("Loading '$css_filename'");
+      }
+	    
+  	  return $source;
+	  }
+	  
+	  return FALSE;
+	  
 	}
 	
 	function write_css_file($file='', $contents='')
 	{
-	  $filename = css_filename($this->_file);	  		  	  	
+	  $filename = css_filename($file);	  		  	  	
     
     if ( ! file_exists($this->settings['css_path']))
     {
@@ -206,32 +239,7 @@ class Sassee {
     return $this->settings['css_url'].$filename;
 
 	  
-	}
-
-	
-	function _fetch_template($template='')
-	{
-	  $template_data = '';
-	  
-    // filemtime() // get the date the file was last modified
-	  
-	  $parts = explode('/', $template);
-	  
-	  $template_group = @$parts[0];
-	  $template_name = isset($parts[1]) ? $parts[1] : 'index';
-	  
-	  if ( ! $template_group OR ! $template_name) return '';
-	  
-	  $query = $this->EE->db->select('templates.template_data')->from('templates')->join('template_groups', 'templates.group_id=template_groups.group_id')->where(array('templates.template_name' => $template_name, 'template_groups.group_name' => $template_group))->get();
-	  
-	  if ( $query->num_rows() > 0)
-	  {
-	    $template_data = $query->row('template_data'); 
-	  }
-	  return $template_data;
-	}
-	// END _parse_template
-	
+	}	
 	
 	/*****************************
 	* Helper functions
@@ -267,6 +275,36 @@ class Sassee {
     
   }
 	
+}
+
+if ( ! class_exists('Inline_template'))
+{
+
+  /**
+  * Overloaded EE Template class for Internal Template parsing
+  *
+  * @package Sassee
+  */
+  class Inline_template extends EE_Template
+  {
+  	function Inline_template()
+  	{
+  		parent::__construct();
+  	}
+
+  	function fetch_template($template_group, $template, $show_default = TRUE, $site_id = '')
+  	{
+  		if ($template_group == '!inline')
+  		{
+  			return $template;
+  		}
+  		else    
+  		{
+  			return parent::fetch_template($template_group, $template, $show_default, $site_id);
+  		}
+  	}
+  }
+  // END Inline_template class
 }
 /* End of file mod.sassee.php */
 /* Location: /system/expressionengine/third_party/sassee/mod.sassee.php */
