@@ -36,6 +36,21 @@ class Sassee_ext {
 		
 	}
 	
+	function __get($key='')
+	{
+	  if ( ! $key OR ! array_key_exists($key, $this->settings)) return NULL;
+	  
+	  $val = $this->settings[$key];
+	  
+	  if (in_array($key, array('css_path', 'css_url', 'sass_path')))
+	  {
+	    $val = $this->EE->functions->remove_double_slashes($val . '/');
+	  }
+	  
+	  return $val;
+	  
+	}
+	
 	// ----------------------------------------------------------------------
 	
 	/**
