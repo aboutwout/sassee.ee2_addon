@@ -48,3 +48,9 @@ Override the output URL specified in the extension settings.
 
 **output_file** [optional]<br />
 Set the filename to use for the output file. If not specified it will derive the output filename from the source file.
+
+## Links
+
+[Support](http://support.baseworks.nl/discussions/sassee)<br />
+[Developer site](http://www.baseworks.nl/)<br />
+[GitHub repository](https://github.com/AboutWout/sassee.ee2_addon)
