@@ -70,8 +70,8 @@ class Sassee_ext {
 			'css_path' => @$this->settings['css_path'],
 			'css_url' => @$this->settings['css_url'],
 			'sass_path' => @$this->settings['sass_path'],
-		  'style' => array('s', array('nested', 'expanded', 'compact', 'compressed'), @$this->settings['style']),
-		  'syntax' => array('s', array('sass', 'scss'), @$this->settings['syntax'])
+		  'style' => array('s', array('nested' => 'nested', 'expanded' => 'expanded', 'compact' => 'compact', 'compressed' => 'compressed'), @$this->settings['style']),
+		  'syntax' => array('s', array('sass' => 'sass', 'scss' => 'scss'), @$this->settings['syntax'])
 		);
 	}
 	
@@ -100,6 +100,8 @@ class Sassee_ext {
 	function get_settings()
 	{
 	  
+	  $settings = array();
+	  
 		$query = $this->EE->db->get_where('extensions', array('class' => __CLASS__));
 		
 		if ($query->num_rows() > 0)
@@ -108,8 +110,13 @@ class Sassee_ext {
 		}
 		
 //		debug($settings);
-		return $settings;
-//		return isset($settings[$this->EE->config->item('site_id')]) ? $settings[$this->EE->config->item('site_id')] : array();
+//		return $settings;
+    if (is_array($settings))
+    {
+		  return isset($settings[$this->EE->config->item('site_id')]) ? $settings[$this->EE->config->item('site_id')] : $settings;
+	  }
+	  
+	  return array();
 			  
 	}
 	
@@ -133,7 +140,7 @@ class Sassee_ext {
 		  'sass_path' => @$_SERVER['DOCUMENT_ROOT'].'/sass/',
 		  'css_path' => @$_SERVER['DOCUMENT_ROOT'].'/css/',
 		  'css_url' => '/css',
-		  'style' => 'nested',
+		  'style' => 'compressed',
 		  'syntax' => 'sass'
 		);
 		

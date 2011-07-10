@@ -1,29 +1,31 @@
 # Sassee
 
-**DISCLAIMER: This add-on is not yet ready for production use and therefor I cannot be held accountable for anything that happens.**
+At runtime Sassee checks if the SASS source file is newer than the parsed CSS file and only runs the parser if that is the case, else it just returns the parsed CSS file. If you specify an output folder that doesn't exists, Sassee will attempt to create it.
 
-At the moment only _{exp:sassee:file file='site.sass'}_ is fully functional. At runtime it checks if the SASS source file is newer than the parsed CSS file and only runs the parser if that is the case, else it just returns the parsed CSS file.
-
-_{exp:sassee:file template='stylesheets/site'}_ also works, but doesn't have a proper date comparison in place, so it always runs the parser.
-
-**IMPORTANT: Make sure your CSS output folder is writable**
+**IMPORTANT: Make sure your CSS output folder is writable and your SASS source folder is readable.**
 
 ## Tags
 
-    {exp:sassee:file file='site.sass'} // Creates site.css in '/css'
-    {exp:sassee:file template='stylsheets/site'} // Creates site.css in '/css'
+###{exp:sassee:file}###
+
+The file tag outputs the URL to the parsed CSS file. If you haven't set a specific syntax to use, it will try to determine it by looking at the source file extension. Else the extension setting is used for syntax.
+
+Either set the _file_ parameter or the _template_ parameter. If both are set the file parameter is used.
+
+    {exp:sassee:file 
+      file='site.sass'
+      template='stylesheets/site' 
+      [syntax='scss'] // sass|scss
+      [style='compressed'] // nested|expanded|compact|compressed
+      [sass_path=''] 
+      [css_path=''] 
+      [css_url=''] 
+    }
 
 ## Settings
 
-At the moment only the following settings are used
-
-* Path to CSS folder
-* URL to CSS folder
-* Path to SASS folder
-
-### Still to implement:
-
-* {exp:sassee:output} // Output parsed SASS directly to the template
-* Implement all the settings
-* Add more parameters to allow settings on a per tag basis.
-* SCSS parsing (while I'm at it)
+* Path to SASS folder: Server path to the source folder. [default=DOC_ROOT.'/sass/']
+* Path to CSS folder: Server path to the output folder. [default=DOC_ROOT.'/css/']
+* URL to CSS folder: URL to the output folder. [default='/css']
+* Syntax: Default syntax to use. [scss|sass]
+* Style: Default style to use. [nested|expanded|compact|compressed]

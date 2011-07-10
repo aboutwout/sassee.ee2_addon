@@ -18,9 +18,9 @@ if ( ! class_exists('SassParser'))
 class Sass {
 
   var $settings = array(
-    'cache' => TRUE,
-    'cache_location' => './sass_cache',
-    'css_location' => './css',
+    'cache' => FALSE,
+    'cache_location' => '',
+    'css_location' => '',
     'debug_info' => FALSE,
     'filename' => '',
     'line' => 0,
@@ -39,11 +39,11 @@ class Sass {
     $this->__construct($settings);
   }
   
-  function __construct($settings=array())
+  function __construct($config=array())
   {
-    if (is_array($settings))
+    if (is_array($config))
     {
-      $this->settings = array_merge($this->settings, $settings);      
+      $this->settings = array_merge($this->settings, $config);      
     }
     
     $this->sass = new SassParser($this->settings);

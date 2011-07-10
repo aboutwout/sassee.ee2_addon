@@ -2,7 +2,7 @@
 
 if ( ! defined('SASSEE_VERSION'))
 {
-  define('SASSEE_VERSION', '0.1');
+  define('SASSEE_VERSION', '0.8');
   define('SASSEE_NAME', 'Sassee');
   define('SASSEE_DESCRIPTION', 'A SASS parser for ExpressionEngine.');  
   define('SASSEE_DOCUMENTATION', 'http://support.baseworks.nl/discussions/sassee');
