@@ -17,15 +17,34 @@ Either set the _file_ parameter or the _template_ parameter. If both are set the
       template='stylesheets/site' 
       [syntax='scss'] // sass|scss
       [style='compressed'] // nested|expanded|compact|compressed
-      [sass_path=''] 
-      [css_path=''] 
-      [css_url=''] 
+      [sass_path='/full/path/to/sass/'] 
+      [css_path='/full/path/to/css/'] 
+      [css_url='/css'] 
+      [output_file='style.css'] 
     }
+    
+## Parameters
 
-## Settings
+**file**<br />
+Source file to load from the folder defined with `sass_path`. Either the `file` or `template` parameter is required.
 
-* Path to SASS folder: Server path to the source folder. [default=DOC_ROOT.'/sass/']
-* Path to CSS folder: Server path to the output folder. [default=DOC_ROOT.'/css/']
-* URL to CSS folder: URL to the output folder. [default='/css']
-* Syntax: Default syntax to use. [scss|sass]
-* Style: Default style to use. [nested|expanded|compact|compressed]
+**template**<br />
+Template to load as source. Either the `file` or `template` parameter is required.
+
+**syntax** [optional]<br />
+Syntax to use for parsing the source file. If not specified it will determine the syntax based on the source file extension or fall back on the syntax specified in the extension settings. Accepted values: `sass` or `scss`.
+
+**style** [optional]<br />
+Style to use for output. Can be `nested`, `expanded`, `compact` or `compressed`. If not specified, it will fall back on the style specified in the extension settings.
+
+**sass_path** [optional]<br />
+Override the source folder specified in the extension settings.
+
+**css_path** [optional]<br />
+Override the output folder specified in the extension settings.
+
+**css_url** [optional]<br />
+Override the output URL specified in the extension settings.
+
+**output_file** [optional]<br />
+Set the filename to use for the output file. If not specified it will derive the output filename from the source file.

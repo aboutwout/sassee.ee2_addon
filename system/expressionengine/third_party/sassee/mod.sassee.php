@@ -117,6 +117,7 @@ class Sassee {
 
     $this->_style = $this->_fetch_param('style', $SEX->style);
     $this->_syntax = $this->_fetch_param('syntax');
+    $this->_output_filename = $this->_fetch_param('output_file');
 
     // Fetch source from a file
     if ($this->_file)
@@ -128,7 +129,10 @@ class Sassee {
         $this->_syntax = $syntax ? $syntax : $SEX->syntax;
       }
       
-      $this->_output_filename = css_filename($this->_file);
+      if ( ! $this->_output_filename)
+      {
+        $this->_output_filename = css_filename($this->_file);        
+      }
       $this->_source = $this->_get_source_from_file($this->_file);
     }
     // Fetch source from a template
