@@ -119,6 +119,13 @@ class Sassee {
     $this->_syntax = $this->_fetch_param('syntax');
     $this->_output_filename = $this->_fetch_param('output_file');
 
+    $this->_debug = $this->_fetch_bool_param('debug', $SEX->debug);
+
+    if ($this->_debug === TRUE)
+    {
+      $this->_style = 'expanded';
+    }
+
     // Fetch source from a file
     if ($this->_file)
     { 
@@ -133,6 +140,7 @@ class Sassee {
       {
         $this->_output_filename = css_filename($this->_file);        
       }
+            
       $this->_source = $this->_get_source_from_file($this->_file);
     }
     // Fetch source from a template
@@ -194,9 +202,11 @@ class Sassee {
     // Load SASS library
     $this->EE->load->library('sass', array(
       'style' => $this->_style,
-      'syntax' => $this->_syntax
+      'syntax' => $this->_syntax,
+      'debug_info' => $this->_debug,
+      'filename' => isset($this->_file) ? $this->_file : $this->_template
     ));
-
+    
     // Return parse SASS source as CSS
     return $this->EE->sass->parse($source, FALSE);
   }
@@ -224,7 +234,7 @@ class Sassee {
     $source_date_modified = filemtime($this->_sass_path.$file);
 
     // If a css file exists and it is as old as the source file
-    if (file_exists($this->_css_path.$this->_output_filename) AND filemtime($this->_css_path.$this->_output_filename) > $source_date_modified)
+    if ( ! $this->_debug AND file_exists($this->_css_path.$this->_output_filename) AND filemtime($this->_css_path.$this->_output_filename) > $source_date_modified)
     {
       $this->_log("Loading previously parsed CSS file '{$this->_output_filename}'");
       $this->_parse_source = FALSE;

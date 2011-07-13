@@ -42,9 +42,19 @@ class Sassee_ext {
 	  
 	  $val = $this->settings[$key];
 	  
-	  if (in_array($key, array('css_path', 'css_url', 'sass_path')))
+	  
+	  
+	  switch ($key)
 	  {
-	    $val = $this->EE->functions->remove_double_slashes($val . '/');
+      case 'css_path':
+      case 'css_url':
+      case 'sass_path':
+        $val = $this->EE->functions->remove_double_slashes($val . '/');
+        break;
+        
+      case 'debug':
+        $val = in_array($val, array('y', 'yes', '1', 'true', 'on')) ? TRUE : FALSE;
+        break;
 	  }
 	  
 	  return $val;
@@ -71,7 +81,8 @@ class Sassee_ext {
 			'css_url' => @$this->settings['css_url'],
 			'sass_path' => @$this->settings['sass_path'],
 		  'style' => array('s', array('nested' => 'nested', 'expanded' => 'expanded', 'compact' => 'compact', 'compressed' => 'compressed'), @$this->settings['style']),
-		  'syntax' => array('s', array('sass' => 'sass', 'scss' => 'scss'), @$this->settings['syntax'])
+		  'syntax' => array('s', array('sass' => 'sass', 'scss' => 'scss'), @$this->settings['syntax']),
+		  'debug' => array('r', array('no' => 'No', 'yes' => 'Yes'), @$this->settings['debug'])
 		);
 	}
 	
@@ -84,7 +95,8 @@ class Sassee_ext {
 			'css_url' => $this->EE->input->post('css_url'),
 			'sass_path' => $this->EE->input->post('sass_path'),
 		  'style' => $this->EE->input->post('style'),
-		  'syntax' => $this->EE->input->post('syntax')
+		  'syntax' => $this->EE->input->post('syntax'),
+		  'debug' => $this->EE->input->post('debug')
 	  );
 	  
 	  $this->EE->db->where('class', __CLASS__);
@@ -141,7 +153,8 @@ class Sassee_ext {
 		  'css_path' => @$_SERVER['DOCUMENT_ROOT'].'/css/',
 		  'css_url' => '/css',
 		  'style' => 'compressed',
-		  'syntax' => 'sass'
+		  'syntax' => 'sass',
+		  'debug' => 'no'
 		);
 		
 		foreach ($this->EE->db->get('sites')->result() as $row)
