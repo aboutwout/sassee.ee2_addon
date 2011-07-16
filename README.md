@@ -21,6 +21,7 @@ Either set the _file_ parameter or the _template_ parameter. If both are set the
       [css_path='/full/path/to/css/'] 
       [css_url='/css'] 
       [output_file='style.css'] 
+      [debug='yes']
     }
     
 ## Parameters
@@ -49,8 +50,21 @@ Override the output URL specified in the extension settings.
 **output_file** [optional]<br />
 Set the filename to use for the output file. If not specified it will derive the output filename from the source file.
 
+**debug** [optional]<br />
+The debug parameter will turn on debugging info for the SASS parser. This is great if you want to know which lines in your SASS file are used while watching it in your browser. If you are a firefox user, [FireSass](https://github.com/nex3/firesass) is a great tool to aid in this.<br  />
+<br />
+When you turn on debugging, your CSS isn't cached and the parsing style is set to `expanded` (a requirement for the parser). When you're done with debugging, make sure to remove the file and let Sassee generate a new, fresh copy of your CSS.
+
 ## Links
 
 [Support](http://support.baseworks.nl/discussions/sassee)<br />
 [Developer site](http://www.baseworks.nl/)<br />
 [GitHub repository](https://github.com/AboutWout/sassee.ee2_addon)
+
+## Changelog
+
+**v 1.0 - 07.16.2011**<br />
+- Added `debug` parameter
+
+**v 0.9 - 07.11.2011**<br />
+- Initial release
