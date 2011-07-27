@@ -18,7 +18,7 @@
 class SassPropertyNode extends SassNode {
 	const MATCH_PROPERTY_NEW = '/^([^\s=:"]+)\s*(?:(= )|:)(.*?)$/';
 	const MATCH_PROPERTY_OLD = '/^:([^\s=:]+)(?:\s*(=)\s*|\s+|$)(.*)/';
-	const MATCH_PSUEDO_SELECTOR = '/^:?\w[-\w]+\(?/i';
+	const MATCH_PSUEDO_SELECTOR = '/^:?-?\w[-\w]+\(?/i';
 	const MATCH_INTERPOLATION = '/^#\{(.*?)\}/i';
 	const NAME	 = 1;
 	const SCRIPT = 2;
@@ -179,12 +179,13 @@ class SassPropertyNode extends SassNode {
 	 */
 	public static function isa($token, $syntax) {
 		$matches = self::match($token, $syntax);
-
 		if (!empty($matches)) {	
+
 			if (isset($matches[self::VALUE]) &&
 					self::isPseudoSelector($matches[self::VALUE])) {
 				return false; 
 			}
+
 	  	if ($token->level === 0) {
 	  		throw new SassPropertyNodeException('Properties can not be assigned at root level', array(), $this);
 	  	}
@@ -233,6 +234,7 @@ class SassPropertyNode extends SassNode {
 	 */
 	private static function isPseudoSelector($string) {
 		preg_match(self::MATCH_PSUEDO_SELECTOR, $string, $matches);
+	  debug($matches, false);
 		return (isset($matches[0]) && in_array($matches[0], self::$psuedoSelectors)) ||
 			preg_match(self::MATCH_INTERPOLATION, $string);
 	}
