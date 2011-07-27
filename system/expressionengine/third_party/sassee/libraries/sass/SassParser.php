@@ -514,6 +514,7 @@ class SassParser {
 	 */
 	private function buildTree($parent) {
 		$node = $this->getNode($parent);
+		
 		while (is_object($node) && $node->isChildOf($parent)) {
 			$parent->addChild($node);
 			$node = $this->buildTree($node);
@@ -529,9 +530,11 @@ class SassParser {
 	 */
 	private function getNode($node) {
 		$token = $this->getToken();
+				
 		if (empty($token)) return null;
+		
 		switch (true) {
-			case SassDirectiveNode::isa($token):
+			case SassDirectiveNode::isa($token):  		
 				return $this->parseDirective($token, $node);
 				break;
 			case SassCommentNode::isa($token):
@@ -540,9 +543,9 @@ class SassParser {
 			case SassVariableNode::isa($token):
 				return new SassVariableNode($token);
 				break;
-			case SassPropertyNode::isa($token, $this->property_syntax):
-				return new SassPropertyNode($token, $this->property_syntax);
-				break;
+      case SassPropertyNode::isa($token, $this->property_syntax):      
+       return new SassPropertyNode($token, $this->property_syntax);
+       break;
 			case SassMixinDefinitionNode::isa($token):
 				if ($this->syntax === SassFile::SCSS) {
 					throw new SassException('Mixin {which} shortcut not allowed in SCSS', array('{which}'=>'definition'), $this);
@@ -558,7 +561,8 @@ class SassParser {
 			default:
 				return new SassRuleNode($token);
 				break;
-		} // switch
+		} // switch		
+		
 	}
 	
 	/**

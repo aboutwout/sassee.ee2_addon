@@ -52,7 +52,9 @@ class SassPropertyNode extends SassNode {
 		':first-letter',
 		':before',
 		':after',
-		// CSS 2.1
+    '-moz-placeholder',
+    '-webkit-input-placeholder',
+    // CSS 2.1
 		'first-line',
 		'first-letter',
 		'before',
@@ -234,7 +236,6 @@ class SassPropertyNode extends SassNode {
 	 */
 	private static function isPseudoSelector($string) {
 		preg_match(self::MATCH_PSUEDO_SELECTOR, $string, $matches);
-	  debug($matches, false);
 		return (isset($matches[0]) && in_array($matches[0], self::$psuedoSelectors)) ||
 			preg_match(self::MATCH_INTERPOLATION, $string);
 	}

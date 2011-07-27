@@ -26,7 +26,7 @@ class Sass {
     'line' => 0,
     'line_numbers' => 0,
     'load_paths' => array(),
-    'property_syntax' => '',
+    'property_syntax' => 'new',
     'quiet' => FALSE,
     'style' => 'nested', // nested|expanded|compact|compressed
     'syntax' => 'sass',
