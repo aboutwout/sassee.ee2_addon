@@ -108,9 +108,9 @@ class Sassee {
 
     $SEX = new Sassee_ext;
 
-    $this->_css_path = $SEX->css_path;
-    $this->_css_url = $SEX->css_url;
-    $this->_sass_path = $SEX->sass_path;
+    $this->_css_path = $this->_fetch_param('css_path', $SEX->css_path);
+    $this->_css_url = $this->_fetch_param('css_url', $SEX->css_url);
+    $this->_sass_path = $this->_fetch_param('sass_path', $SEX->sass_path);
 
     $this->_file = $this->_fetch_param('file');
     $this->_template = $this->_fetch_param('template');
